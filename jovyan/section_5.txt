@@ -1,0 +1,1103 @@
+
+Advanced C++ for Robotics
+Unit 5:   Pointers and references
+- Summary -
+
+Estimated time to completion: 4 hours
+
+Pointers are a powerful feature of C++ that allow you to manipulate the memory address of a variable. They are essential for understanding and using C++ and very usefull for developing performant robotics applications. To put it in a nutshell, code that uses pointers can run faster because it enables modifying a variable or an object without copying it.
+- End of Summary -
+5.1   Pointer basics
+
+Let me quickly review the basics of pointers:
+
+    Pointers or pointer variables store the memory block addresses of variables, objects and functions while a program is running.
+
+    To define a variable of type pointer you use the asterisk (*)
+
+Example:
+
+int * myVariable;
+
+The previous syntax means, the variable myVariable is a pointer variable to an integer.
+
+It is good practice to always initialize a pointer. If you don’t have a value to initialize it with, then you should set it to NULL. The keyword nullptr denotes a null pointer and is a syntax feature available since C++11. A pointer initialized to nullptr is guaranteed not to refer to a valid address that could cause an error if accessed or dereferenced by accident.
+
+int * myVariable = nullptr;
+
+That is a pointer pointing to nothing. It is empty. We can assign a useful value by doing the following:
+
+int * myVariable = nullptr;
+int a = 42;
+myVariable = &a;
+
+Now myVariable is pointing to the address where a has stored the value 42. Remember myVariable doesn't contain the value 42, but it contains the address of the memory at which that42 is stored.
+
+alt text
+Demo 5.1
+
+#include <iostream>
+
+int main(){
+    // variable declaration 
+    int my_variable = 2;
+    // pointer variable declaration
+    int * my_pointer;
+    // store memoery address of variable my_variable
+    my_pointer = &my_variable;    
+
+    // following lines will generate error
+    // as values can not be assigned to pointers
+    // my_pointer = 2; 
+    // my_pointer = my_variable;
+    
+    std::cout << "my_variable = " << my_variable << " (value of my_variable)" << std::endl;
+    std::cout << "&my_variable = " << &my_variable << " (address of my_variable)" << std::endl;
+    std::cout << "my_pointer = " << my_pointer << " (address of my_variable)" << std::endl;
+    std::cout << "*my_pointer = " << *my_pointer << " (value store at address 'my_pointer')" << std::endl;
+    
+
+    return 0;
+}
+
+Expected output:
+
+my_variable = 2 (value of my_variable)
+&my_variable = 0x7ffd6af4f27c (address of my_variable)
+my_pointer = 0x7ffd6af4f27c (address of my_variable)
+*my_pointer = 2 (value store at address 'my_pointer')
+
+End of Demo 5.1
+
+Pointers are useful to pass large objects to functions without copying them, which may take a long time. For example, images captured by a camera, or laser data captured by a LIDAR, or point clouds captured by point cloud devices.
+
+Note: Recall from the previous unit, C++ variables are just build-in objects, therefore, you create pointers to variables like integers, floats, arrays, vectors same as you can create pointers to any programmer defined object.
+
+The code below constains a declaration of a function named MyFunction that takes a pointer to an object of type MyBigObject as a parameter and returns an int value. Afterwards you see how an object named mbc of type MyBigClass is created. Finally there is a call to the function MyFunction with the address of the object mbc as an argument:
+
+int MyFunction (*MyBigObject bc)
+{
+  ...
+}
+
+...
+MyBigClass mbc();
+int b = MyFunction(&mbc);
+
+Remember that you access to the members of the pointer variable by using the symbol ->
+
+int MyFunction (*MyClass mc)
+{
+  std::string class_name = mc->name;
+  ...
+}
+
+Pointer to array
+
+Another typical usage of pointers is to manage arrays. You create an array and then a pointer that points to the first element of the array:
+
+int myarray[6] = {4,8,15,16,23,42};
+int* mypointer;
+mypointer = myarray;
+
+Here, my_array is an integer array of size 6, and my_pointer is a pointer to an integer (int*). By assigning my_array to my_pointer, we are essentially pointing my_pointer to the first element of my_array. Or, put in a different way, the memory address of my_array[0] is assigned to my_pointer.
+
+alt text
+
+Remember that arrays are stored in contiguous memory locations in C++. This means that the elements of an array are stored one after another in memory, without any gaps between them. This property allows for efficient access and traversal of array elements.
+
+To iterate over elements in an array using a pointer to an array and the ++ operator, you can follow the following approach:
+
+int arr[6] = {4,8,15,16,23,42};
+int* mypointer = myarray;
+
+for (int i = 0; i < 6; ++i) {
+    std::cout << *mypointer << std::endl;
+    ++mypointer;
+}
+
+As you already know, the above code assigns the memory address of the first element of myarray to mypointer.
+
+The for loop iterates from 0 to 6, which corresponds to the indices of the array elements. Inside the loop, we first dereference the pointer using *mypointer to access the value at the current memory location and print it to the console. Then, we increment the pointer using ++mypointer, which moves it to the next memory location. By using *mypointer and ++mypointer in the loop, we can access and traverse each element of the array.
+
+It is important to note that the loop condition i < 6 is based on the known size of the array. If the array size is unknown, it's recommended to keep track of the array size separately to prevent accessing memory beyond the array boundaries.
+5.2   Initialization of pointers with new values (booking memory)
+
+So far, we have been working with pointers pointing to already existing variables. The value of the pointer is the address of an existing variable. We have also described how to initialize a pointer to NULL.
+
+You can also allocate memory for a pointer yourself. This allows you to store new data items in the memory space that you have reserved. To do this, you use the keyword new to initialize a pointer.
+
+Here we initialize a pointer to an object of class MyClass by using the keyword new:
+
+MyClass * mc;
+mc = new MyClass("this_name",7);
+
+In the two lines of code above, we created a pointer and then populated it with a new object created on the spot.
+
+The new object is stored in memory. The object itself is not inside a variable, it is only in the memory of the computer. The only way to access that object is by means of the pointer that is pointing to that memory address.
+
+The object memory will be occupied even if the pointer dies.
+
+Every pointer initialized with a new call MUST BE MANUALLY DELETED BY YOU once you have finished with it, by using the delete command:
+
+delete mc;
+
+If you don't delete it once you finished, the memory you reserved with new will stay occupied by the pointer and no other program can use it. This may lead to problems of memory leaks.
+
+It is important to mention that the memory allocated by a pointer with new will not be released when the pointer dies. You need to force its liberation before the pointer dies (by being out of scope).
+
+Example:
+
+{
+    MyClass * mc;
+    mc = new MyClass("this_name",7);
+    
+    /// ... here your code
+}
+
+/// here, the variable mc doesn't exist anymore, but the memory reserved is still
+/// reserved, so no other program can take it and use it
+
+The previous example leads to memory leaks, that is, the ever increasing memory usage of a program, which may lead to crash of the computer.
+
+The correct way to do it would be:
+
+{
+    MyClass * mc;
+    mc = new MyClass("this_name",7);
+    
+    /// ... here your code
+    
+    delete mc;
+}
+
+You can apply the same principle to arrays. You can create a pointer to an array which is newly created in memory:
+
+int *my_array = new int[10];
+
+To delete a pointer to an array, use the following command:
+
+delete [] my_array;
+
+You can access the values of the array, or set them, by referencing the content of the address. For instance, if you want to print the value of the 10th array position use the following:
+
+std::cout << *my_array[9];
+
+This means, print the value stored in the 10th memory position. It does not say, print the value of the memory position of the 10th position. In that case that would be:
+
+std::cout << my_array[9];
+
+You can also assign one of the pointers of the array to another pointer variable:
+
+int * p;
+p = my_array[9];
+
+If you want to assign the memory address of an int value to the 10th array position, use the following:
+
+int i = 99;
+my_array[9] = &i;
+
+- Exercise 5.2.1 -
+
+Write a ROS node that subscribes to the laser of robot1 and assigns the ranges array to a pointer.
+
+Tasks:
+
+    Create a new C++ ROS package called laser_reader which depends on roscpp and sensor_msgs.
+    Create a node with a subscriber to get laser scan data using the code below (laser_reader.h and laser_reader.cpp)
+    Then retrieve the ranges array from every laser message that arrives at the callback and assign it to a pointer to array named last_laser_ranges, which is a member of the TurtleClass class.
+    Print on the screen the range measured by the ray at the front of the robot for the last scan received.
+
+Hints for Exercise 5.1:
+
+    Use the laser_reader.h and laser_reader.cpp files below as your template for your program.
+    You need to get the laser data on the laser_callback method.
+    The sensor_msgs::LaserScan::ConstPtr is a pointer to a message of type LaserScan which contains the data of the latest laser measurement in the ranges field. Then in order to access its elements, you will need to use pointers nomenclature.
+    The structure of the LaserScan message is as follows:
+
+Header header            # timestamp in the header is the acquisition time of 
+                         # the first ray in the scan.
+                         #
+                         # in frame frame_id, angles are measured around 
+                         # the positive Z axis (counterclockwise, if Z is up)
+                         # with zero angle being forward along the x axis
+                         
+float32 angle_min        # start angle of the scan [rad]
+float32 angle_max        # end angle of the scan [rad]
+float32 angle_increment  # angular distance between measurements [rad]
+
+float32 time_increment   # time between measurements [seconds] - if your scanner
+                         # is moving, this will be used in interpolating position
+                         # of 3d points
+float32 scan_time        # time between scans [seconds]
+
+float32 range_min        # minimum range value [m]
+float32 range_max        # maximum range value [m]
+
+float32[] ranges         # range data [m] (Note: values < range_min or > range_max should be discarded)
+float32[] intensities    # intensity data [device-specific units].  If your
+                         # device does not provide intensities, please leave
+                         # the array empty.
+
+    Each laser scan has 720 distance values
+    You will need to do a new of the last_laser_ranges in the constructor of the class
+    Use the new operator to allocate memory in the required size.
+    Then for every call of the laser callback, copy the ranges array into your last_laser_ranges.
+    Remember to do a delete of the pointer in the destructor of the class, so the memory gets freed
+
+  laser_reader.h
+
+#ifndef LASER_TURTLE_H
+#define LASER_TURTLE_H
+#include "sensor_msgs/LaserScan.h"
+#include <ros/ros.h>
+
+class TurtleClass {
+private:
+  ros::NodeHandle n;
+  ros::Subscriber laser_sub;
+  void laser_callback(const sensor_msgs::LaserScan::ConstPtr &laser_msg);
+
+  /* DEFINE HERE THE POINTER TO THE LASER RANGES ARRAY */
+
+public:
+  TurtleClass();
+  ~TurtleClass();
+};
+
+#endif
+
+  laser_reader.cpp
+
+#include "robot_management/laser_turtle.h"
+#include "sensor_msgs/LaserScan.h"
+#include <ros/ros.h>
+
+// TurtleClass constructor make changes in the constructor as per definition
+TurtleClass::TurtleClass() {
+  n = ros::NodeHandle("~");
+  laser_sub =
+      n.subscribe("/kobuki/laser/scan", 10, &TurtleClass::laser_callback, this);
+  ROS_INFO("Initializing node.");
+  usleep(2000000);
+  // an array of 720 pointers to float
+  last_laser_ranges = new float[720];
+}
+
+/* CREATE THE CLASS DESTRUCTOR HERE */
+
+
+void TurtleClass::laser_callback(
+    const sensor_msgs::LaserScan::ConstPtr &laser_msg) {
+
+/* WRITE HERE YOUR CODE */
+
+}
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "rosbot_class_node");
+
+  TurtleClass tc = TurtleClass();
+  ros::spin();
+
+  return 0;
+}
+
+- End of Exercise 5.2.1 -
+- Solution for Exercise 5.2.1 -
+
+  Execute in Shell #1
+
+cd ~/catkin_ws/src
+
+catkin_create_pkg laser_reader roscpp sensor_msgs
+
+touch ~/catkin_ws/src/laser_reader/include/laser_reader/laser_reader.h
+
+touch ~/catkin_ws/src/laser_reader/src/laser_reader.cpp
+
+  laser_turtle.h
+
+#ifndef LASER_TURTLE_H
+#define LASER_TURTLE_H
+#include "sensor_msgs/LaserScan.h"
+#include <ros/ros.h>
+
+class TurtleClass {
+private:
+  ros::NodeHandle n;
+  ros::Subscriber laser_sub;
+  void laser_callback(const sensor_msgs::LaserScan::ConstPtr &laser_msg);
+
+  /* DEFINE HERE THE POINTER TO THE LASER RANGES ARRAY */
+  float *last_laser_ranges;
+
+public:
+  TurtleClass();
+  ~TurtleClass();
+};
+
+#endif
+
+  laser_turtle.cpp
+
+#include "robot_management/laser_turtle.h"
+#include "sensor_msgs/LaserScan.h"
+#include <ros/ros.h>
+
+// TurtleClass constructor make changes in the constructor as per definition
+TurtleClass::TurtleClass() {
+  n = ros::NodeHandle("~");
+  laser_sub =
+      n.subscribe("/kobuki/laser/scan", 10, &TurtleClass::laser_callback, this);
+  ROS_INFO("Initializing node.");
+  usleep(2000000);
+  // an array of 720 pointers to float
+  last_laser_ranges = new float[720];
+}
+
+/* CREATE THE CLASS DESTRUCTOR HERE */
+TurtleClass::~TurtleClass() { delete last_laser_ranges; }
+
+void TurtleClass::laser_callback(
+    const sensor_msgs::LaserScan::ConstPtr &laser_msg) {
+
+/* WRITE HERE YOUR CODE */
+for (int i = 0; i < laser_msg->ranges.size(); i++) {
+    last_laser_ranges[i] = laser_msg->ranges[i];
+  }
+
+  std::cout << "Distance measured by the ray at the front of the robot: ";
+  std::cout << *(last_laser_ranges + 360) << std::endl;
+}
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "rosbot_class_node");
+
+  TurtleClass tc = TurtleClass();
+  ros::spin();
+
+  return 0;
+}
+
+- End of Solution for Exercise 5.2.1 -
+5.3   Arrays of pointers
+
+You must be able to differentiate between a pointer to array and an array of pointers. The former, you already learned in the previous section. For the later, it means an array whose content consists of pointers (of a given type).
+
+You can create arrays of pointers in the following way:
+
+float *arrayPtr[3];
+
+This means: arrayPtr is an array of type float*, that is, all the values stored in the array will be pointers to float variables.
+
+alt text
+
+Then you can assign to each element of the array a pointer to an array of float.
+
+float array1[23];
+float array2[7];
+float array3[15];
+
+arrayPtr[0] = &array1;
+arrayPtr[1] = &array2;
+arrayPtr[2] = &array3;
+
+However, if you want to declare the array of pointers and initialize it with reserved space in the memory, you need to declare it this way:
+
+float **arrayPtr = new int *[3];
+
+We use the syntax above for creating a double pointer to an object in C++. Don't worry about understanding double pointers yet. This concept will be explained shortly after.
+
+Then in order to delete it you need to do:
+
+delete [] arrayPtr;
+
+Having said all that, I recommend you instead the usage of the STL vector (std::vector). The vector is a lot easier to use, more intuitive and safer, since you don't have to remember to call the delete.
+- Exercise 5.3.1 -
+
+Add to the 5.2.1 exercise program an array of pointers to arrays called last_ten_scans of size 10 as a member of the class.
+
+Tasks:
+
+    Store in the last_ten_scan the last 10 scans received.
+    Print on the screen the range measured by the ray at the front of the robot for the last 10 scans received
+
+Hints for Exercise 5.2:
+
+    You will need to create a copy of the last_scan and provide the pointer to that to the 1st position of the last_ten_scans array.
+    Then do the same with the second last_scan received at position number 2
+    Then do the same for the third, forth, and so until ten
+    Once reached the tenth position, then put the 11th scan pointer into the 1st position of the array
+    Continue the same procedure forever. You will always keep the last 10 scans received into the last_ten_scans array in the form of pointers to arrays of float.
+    Remember to delete the array in the destructor of the class
+
+- End of Exercise 5.3.1 -
+- Solution for Exercise 5.3.1 -
+
+  laser_turtle.h
+
+#ifndef LASER_TURTLE_H
+#define LASER_TURTLE_H
+#include "sensor_msgs/LaserScan.h"
+#include <ros/ros.h>
+
+class TurtleClass {
+private:
+  ros::NodeHandle n;
+  ros::Subscriber laser_sub;
+  void laser_callback(const sensor_msgs::LaserScan::ConstPtr &laser_msg);
+
+  // Define an array of pointers to the arrays
+  float *last_ten_scans[10];
+
+public:
+  TurtleClass();
+  ~TurtleClass();
+};
+
+#endif
+
+  laser_turtle.cpp
+
+#include "robot_management/laser_turtle.h"
+#include "sensor_msgs/LaserScan.h"
+#include <ros/ros.h>
+
+// TurtleClass constructor
+TurtleClass::TurtleClass() {
+  n = ros::NodeHandle("~");
+  laser_sub =
+      n.subscribe("/kobuki/laser/scan", 10, &TurtleClass::laser_callback, this);
+  ROS_INFO("Initializing node.");
+  usleep(2000000);
+
+  // Initialize the last_ten_scans array
+  for (int i = 0; i < 10; i++) {
+    last_ten_scans[i] = new float[720];
+  }
+}
+
+// TurtleClass destructor
+TurtleClass::~TurtleClass() {
+  // Delete the dynamically allocated arrays
+  for (int i = 0; i < 10; i++) {
+    delete[] last_ten_scans[i];
+  }
+}
+
+void TurtleClass::laser_callback(
+    const sensor_msgs::LaserScan::ConstPtr &laser_msg) {
+  // Shift the elements in last_ten_scans array to make space for the new scan
+  for (int i = 9; i > 0; i--) {
+    for (int j = 0; j < 720; j++) {
+      last_ten_scans[i][j] = last_ten_scans[i - 1][j];
+    }
+  }
+
+  // Store the new scan in the first element of last_ten_scans array
+  for (int i = 0; i < 720; i++) {
+    last_ten_scans[0][i] = laser_msg->ranges[i];
+  }
+
+  // Print the range measured at the front of the robot for the last 10 scans
+  std::cout << "Range measured by the ray at the front for the last 10 scans:\n";
+  for (int i = 0; i < 10; i++) {
+    std::cout << "Scan " << i << ": " << last_ten_scans[i][360] << std::endl;
+  }
+}
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "rosbot_class_node");
+
+  TurtleClass tc;
+  ros::spin();
+
+  return 0;
+}
+
+- End of Solution for Exercise 5.3.1 -
+5.4   Pointers and 'const'
+
+By defining the pointer to a variable, you are allowing the pointer to access that variable and modify it.
+
+The const keyword is used to specify that a specific object should not be modified.
+
+By declaring a pointer as const you are indicating that the pointer can access a memory location to get a variable value, but it cannot be reassigned to point to a different object. In other words: the const keyword makes the path to a variable constant not the variable itself, unless the variable is also declared constant.
+
+You define a pointer-to-const like this:
+
+int a = 9;
+const int * p = &a;
+
+In the previous code, p points to the a variable. It can also read a's stored value, but it can't modify it. For example, the following code would be correct:
+
+int a = 9;
+const int * p = &a;
+int x = *p;
+
+At the end, x contains the value 9. However, the following code would be wrong:
+
+int a = 9;
+const int * p = &a;
+*p = 7;
+
+In this case, the compiler would fail indicating that you cannot modify the variable to which p is pointing to.
+
+Good Practice: use const pointers as much as possible to prevent errors. Adding const to a pointer generates a compiler error when you're doing things you didn't mean to do, and it is better to find bugs at compile-time, rather than run-time.
+Different types of const with pointers
+
+Let's imagine we have the following variable:
+
+char sentence[] = "a sentence";
+
+To begin, we can have a regular (non-const) pointer to a regular (non-const) data by doing this:
+
+char * p = sentence;
+
+Then we can have a non-const pointer to a const data by doing this:
+
+const char * p = sentence;
+
+We can have a const pointer to a non-const data by doing this:
+
+char * const p = sentence;
+
+We can have a const pointer to a const data by doing this:
+
+const char * const p = sentence;
+
+Good practice: As a general rule, you should use const as much as possible. From now on, you should try to make all your functions calls const.
+- Exercise 5.4.1 -
+
+Let's continue where we left off in the previous exercise.
+
+Tasks:
+
+    Create a new source code file named laser_subscriber.cpp inside the ROS package called laser_reader.
+    Implement a class for a ROS node that subscribes to a laser scan topic.
+    Inside the class, create a private member variable named laser_scan of type const sensor_msgs::LaserScan*. Initialize it to nullptr.
+    Inside the laser scan callback function store the laser scan data received using the msg.get() function and assign it to the laser_scan member variable.
+    Print on the screen the range measured by the ray at the front of the robot for the last scan received.
+
+- End of Exercise 5.4.1 -
+- Solution for Exercise 5.4.1 -
+
+  laser_subscriber.cpp
+
+#include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
+
+class LaserSubscriberNode
+{
+public:
+  LaserSubscriberNode() : laser_scan_(nullptr)
+  {
+    // Initialize the ROS node
+    ros::NodeHandle nh;
+
+    // Subscribe to the laser scan topic
+    laser_scan_sub = nh.subscribe("/kobuki/laser/scan", 10, &LaserSubscriberNode::laserScanCallback, this);
+  }
+
+private:
+  // Laser scan callback function
+  void laserScanCallback(const sensor_msgs::LaserScanConstPtr& msg)
+  {
+    // Store the laser scan data using the const pointer member variable
+    laser_scan = msg.get();
+
+    // Print the range at index 360 (robot front)
+    if (!laser_scan->ranges.empty())
+    {
+      float range = laser_scan->ranges[360];
+      ROS_INFO("Range: %f", range);
+    }
+  }
+
+  // The const qualifier indicates that the pointer itself is constant
+  // meaning it cannot be reassigned to point to a different object
+  const sensor_msgs::LaserScan* laser_scan;
+    
+  ros::Subscriber laser_scan_sub;
+};
+
+int main(int argc, char** argv)
+{
+  // Initialize the ROS node
+  ros::init(argc, argv, "laser_subscriber_node");
+
+  // Create an instance of the LaserSubscriberNode class
+  LaserSubscriberNode node;
+
+  // Spin the node
+  ros::spin();
+
+  return 0;
+}
+
+- End of Solution for Exercise 5.4.1 -
+5.5   'const' functions
+
+You can also declare functions as const. you declare a function as const in the following way:
+
+class MyClass 
+{
+    int value;
+  public:
+    void myConstFunction () const;
+    void myNonConstFunction();
+}
+
+By declaring the function myConstFunction as const, you are indicating that the function is not modifying any of the members of the class. Hence, declaring a function as const only makes sense when the function is a member of a class.
+
+One important point here is that const objects can only call const functions of the class .
+
+const MyClass mc;
+mc.myNonConstFunction();
+
+The previous code would fail during compilation time. The compiler is detecting that the const function is calling a non-const function, so it prevents doing the compilation.
+
+const MyClass mc;
+mc.myConstFunction();
+
+The previous code would work perfectly.
+5.6   Pointers to pointers
+
+It is possible to define a pointer that points to another pointer. After all, a pointer is just a type of C++, so you can point to any kind of type.
+
+In order to create a pointer to pointers, use the double asterisk:
+
+int ** p;
+
+p is a pointer to pointers of integers. This is usually used to point to tables.
+
+char ** table_of_sentences;
+char * frase1;
+char * frase2;
+
+table_of_sentences = &frase1;
+table_of_sentences ++;
+table_of_sentences = &frase2;
+
+5.7   Pointers to functions
+
+It is possible to use pointers to functions. This is useful when we want to provide to a function the function that it has to use (this is done a lot in ROS with the definition of callbacks).
+
+You provide a pointer to function using the following syntax:
+
+int my_function (int i, double d)
+{
+    ...
+}
+
+int (* my_pointer_to_function)(int,double) = my_function;
+
+my_pointer_to_function is a pointer to the function my_function. You can use this pointer to pass the function to another function.
+
+double my_operation (int x, double y, int (*functocall)(int,double))
+{
+ (*functocall)(x,y);
+  ...
+}
+
+void my_function (int i, double d)
+{
+    ...
+}
+
+void (* my_pointer_to_function)(int,double) = my_function;
+my_operation ( 5, 9.9, my_pointer_to_function)
+
+In the previous example, my_pointer_to_function is used as a pointer to the function my_function. Then the code calls the my_operation function providing to it the pointer to the my_function function.
+
+This is extensively used in ROS when defining the callbakcs of the topic subscribers:
+
+ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
+
+where chatterCallback is the pointer to the function that needs to be called when a new data is received in topic chatter.
+5.8   References
+
+References are like pointers but using the syntax of normal variables. They are used to create clearer and simpler code, as well as to prevent some pointer errors, by forcing const variables.
+
+The way to declare a reference is like this:
+
+int& my_reference;
+
+That means, my_reference is a reference to int.
+
+The reference contains a memory address of an object but the syntax is like the one of the object itself. For instance:
+
+MyClass& my_reference;
+
+MyClass mc("testing",9);
+
+my_reference = mc; /* my_reference points now to mc memory address */
+
+std::out << my_reference.name;
+
+The line with the code:
+
+my_reference = mc;
+
+it is not making a copy of mc into my_reference, but instead, it is making my_reference to point to the address of mc.
+
+However, when we want to use the content of mc from the references, we do not use the arrow operator -> but the dot .:
+
+std::out << my_reference.name;
+
+The previous code shows a main difference between references and pointers: references cannot create new spaces in memory. You cannot use the new keyword to initialize a reference. references, reference to already existing objects.
+
+That is why we define my_reference empty, and then assign mc to it.
+
+We also use references to pass a pointer in a cleaner form to a function. For instance:
+
+void ThisFunction (MyClass& param)
+{
+    std::out << param.name;
+}
+
+MyClass mc("testing",9);
+ThisFunction(mc);
+
+Again, in the previous code, when we call ThisFunction we are actually passing to the function the address of the object mc, not a copy of it.
+
+An equivalent code with pointers would have been:
+
+void ThisFunction (MyClass* param)
+{
+    std::out << param->name;
+}
+
+MyClass mc("testing",9);
+ThisFunction(&mc);
+
+As you can see, it is a lot more complicated syntax, prone to errors.
+
+Note: We can access athe contents of the memory location whose address is stored in a pointer variable in two ways: Using the arrow -> operator or using the (*) asterisk operator and dot(.) operator.
+
+Another benefit of references when calling functions is that the pointer is const (see the importance of this below).
+
+You cannot change the value of a reference once you have assigned to it a value. If you try to do it, you will only modify the value assigned in the first place:
+
+MyClass mc("testing",9);
+MyClass mc2("second_test", 99);
+
+MyClass& my_reference = mc;
+
+my_reference = mc2;
+
+std::out << mc.name;
+
+The previous code will print second_test since the secodn reference assignment changed the value of the object the reference is pointing to, not the value of the reference itself.
+
+Good practice: from now on, you will be using references everytime that you can, instead of using pointers. This will make your code easier to read and less prone to failures.
+5.9   Const references
+
+Now that you know that a reference entails a const pointer, you can even go further and make also const the content the reference is pointing to.
+
+const MyClass& mc;
+
+That would be equivalent to:
+
+const MyClass * const mc; 
+
+For example, in ROS, all the callback functions of subscribers have the following signature:
+
+void myCallback(const std_msgs::String::ConstPtr& msg)
+
+This means, the callback function will receive a const reference to the message received through the topic. By making the reference const, this means that the callback is not going to modify the content of the message in any sense, just make use of it. Which makes totally sense!
+
+If, for whatever reason, the program tries to modify the incomming message in the callback code, the compiler will complain during compilation and abort from compiling. Errors at compile time are a good way of detecting mistakes as early as possible, to all current and future developers working on the project.
+
+Good practice: from now on, you will be using const references every time that you can. By doing this, you will write more robust code and prevent errors during execution time, because they will be catched by the compiler during compilation time.
+- Exercise 5.9.1 -
+
+Tasks:
+
+Use the code of the previous exercise to add a new function to the class named "printClosestObstacleDistance". When this function is called, it should return the angle at which the closest obstacle is found by the laser scanner. Also make "const" everything in the code that can be made "const" .
+- End of Exercise 5.9.1 -
+- Solution for Exercise 5.9.1 -
+
+  laser_subscriber.cpp
+
+#include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
+
+class LaserSubscriberNode {
+public:
+  LaserSubscriberNode() : laser_scan_(nullptr) {
+    // Initialize the ROS node
+    ros::NodeHandle nh;
+
+    // Subscribe to the laser scan topic
+    laser_scan_sub =
+        nh.subscribe("/kobuki/laser/scan", 10,
+                     &LaserSubscriberNode::laserScanCallback, this);
+  }
+
+  void printClosestObstacleDistance() const {
+    float min_range = laser_scan_->ranges[0];
+    int min_index = 0;
+
+    // Find the index of the minimum range in the laser scan data
+    for (int i = 1; i < laser_scan_->ranges.size(); i++) {
+      if (laser_scan_->ranges[i] < min_range) {
+        min_range = laser_scan_->ranges[i];
+        min_index = i;
+      }
+    }
+
+    // Calculate the angle at which the closest obstacle is found
+    float angle =
+        laser_scan_->angle_min + min_index * laser_scan_->angle_increment;
+
+    // Print the distance to the closest obstacle and the corresponding angle in
+    // radian
+    std::cout << "Closest obstacle distance: " << min_range
+              << ", Angle (rad): " << angle << std::endl;
+  }
+
+private:
+  // Laser scan callback function
+  void laserScanCallback(const sensor_msgs::LaserScanConstPtr &msg) {
+    // Store the laser scan data using the const pointer member variable
+    laser_scan_ = msg.get();
+
+    if (laser_scan_ != nullptr && !laser_scan_->ranges.empty()) {
+      // Call the function to print the distance to the closest obstacle
+      printClosestObstacleDistance();
+    }
+  }
+
+  const sensor_msgs::LaserScan *laser_scan_;
+  ros::Subscriber laser_scan_sub;
+};
+
+int main(int argc, char **argv) {
+  // Initialize the ROS node
+  ros::init(argc, argv, "laser_subscriber_node");
+
+  // Create an instance of the LaserSubscriberNode class
+  LaserSubscriberNode node;
+
+  // Spin the node
+  ros::spin();
+
+  return 0;
+}
+
+- End of Solution for Exercise 5.9.1 -
+5.10   Smart Pointers
+
+Smart pointers are pointers for which you don't have to call delete when you are finish with it, because they do the cleaning for you.
+
+THIS IS VERY IMPORTANT because it can prevent a lot of memory leaks.
+
+Remember memory leaks are situations in a program that it consumes more and more memory as it runs in time. This ends in a program consuming all system memory and requiring a reboot.
+
+Programs with memory leaks are devil, because they don't allow us to be running them uninterruptively. We need to close them at some point in time and re-start it, so the memory gets released.
+
+Smart pointers take care of that and help you prevent THIS kind of memory leak (for example, when you forget to do the delete of the pointer, or when the code creates an exception preventing to execute your delete code).
+
+In order to make use of smart pointers you need to include the memory library:
+
+#include <memory>
+
+5.11   Smart Pointers: unique_ptr
+
+There could be only a single pointer pointing to that memory region.
+
+To create a unique_ptr use this code:
+
+std::unique_ptr<MyClass> mc = std::make_unique<MyClass>();
+
+If you use in the following way:
+
+void myFunction ()
+{
+    std::unique_ptr<MyClass> mc = std::make_unique<MyClass>();
+    print (mc->name);
+}
+
+The pointer will be automatically destroyed after the function is finished.
+
+You should use this kind of pointer everytime that you need a simple pointer, provided that you don't need to pass a copy of it into a function or store in another class.
+
+You can copy a unique_ptr (hence pass by copy to a function), but then the ownership for that memory is transferred to the copy, and the previous pointer deleted.
+
+void myFunction ()
+{
+    std::unique_ptr<MyClass> mc2;
+    std::unique_ptr<MyClass> mc = std::make_unique<MyClass>();
+    
+    mc2 = mc; 
+}
+
+At the point where mc is assigned to mc2, then mc2 becomes the only one pointing to the memory the mc booked, and mc is no longer pointing to a valid memory address.
+
+Note: the angle brackets mean we are using a template. You will learm how to create templates in the upcoming unit.
+Example of a dynamic array of unique_ptr pointers
+
+std::unique_ptr<int[]> array(new int[size]);
+
+So, from now on, never use again a raw pointer anymore.
+
+If you need to use a pointer internally, use the unique_ptr pointer. In case you need to copy or share the pointer with other parts of the code, then you need to use a shared_ptr.
+5.12   Smart Pointers: shared_ptr
+
+A shared pointer keeps a count of how many people is referencing to the pointer. When the counter reaches 0, then the pointer gets destroyed.
+
+std::shared_ptr<MyClass> sharedMc = std::make_shared<MyClass>();
+
+Shared pointers can be copied and passed to other functions. Only when all the elements that have a copy have died, will the destructor of the pointer be called, and the pointer deleted.
+
+void myFunction ()
+{
+    std::shared_ptr<MyClass> oneCopyOfMc;
+    {
+        std::shared_ptr<MyClass> sharedMc = std::make_shared<MyClass>();
+        oneCopyOfMc = sharedMc;
+    }
+    /* Here sharedMc memory is not released because there is oneCopyOfMc pointing to it */
+}
+/* Here memory is deleted since no objects are pointing to it */
+
+In the previous code, the memory to which sharedMc is pointing will not be released (delete) until all the vars pointing to it have died.
+
+shared_ptr are not thread safe. This means that you must not allow the access to the pointer at the same time by two different threads. This will make more senes on Unit 7 when we talk about concurrency.
+5.13   Smart Pointers: weak_ptr
+
+weak_ptr are the same as shared_ptr but with the difference that they do not increase the counter of references to the pointer.
+
+This means, you can share it but the copies of it cannot dictate the moment when the memory will be released. Only when the counter of the shared_ptr reaches zero, will the pointer be destroyed.
+
+std::weak_ptr<MyClass> oneCopyOfMc;
+
+We use weak_ptr in combination with shared_ptr.
+
+void myFunction ()
+{
+    std::weak_ptr<MyClass> weakCopyOfMc;
+    {
+        std::shared_ptr<MyClass> sharedMc = std::make_shared<MyClass>();
+        weakCopyOfMc = sharedMc;
+    }
+    /* Here sharedMc memory IS RELEASED even if there is weakCopyOfMc pointing to it */
+}
+
+If you use a weak_ptr you may need to check if it is still valid when you try to use it. You check its validity by using the lock() function of the pointers:
+
+void myFunction ()
+{
+    std::weak_ptr<MyClass> weakCopyOfMc;
+    {
+        std::shared_ptr<MyClass> sharedMc = std::make_shared<MyClass>();
+        weakCopyOfMc = sharedMc;
+    }
+    if (std::shared_ptr<MyClass> tmp = weakCopyOfMc.lock())
+      std::cout << tmp->name;
+    else
+        std::cout << "FAIL";
+}
+
+The previous code will always print "FAIL" since at the time of checking for the pointer, it doesn't exist anymore
+5.14   ROS usage of smart pointers
+
+In ROS1, pointers are defined using a special library named Boost.
+
+sensor_msgs::Image::Ptr my_ptr(new sensor_msgs());
+
+Actually, if we check in the implementation, we can see that this is equivalent to:
+
+boost::shared_ptr<sensor_msgs::Image> my_ptr(new sensor_msgs());
+
+As you can see, that is the same code we saw at the shared pointers section of this unit, being the only difference that the shared_ptr class is not the one provided by STL, but the one provided by Boost.
+- Exercise 5.14.1 -
+
+Tasks:
+
+    Change the code of the previous exercise (Exercise 5.9.1) to work with smart pointers instead of raw pointers.
+
+- End of Exercise 5.14.1 -
+- Solution for Exercise 5.14.1 -
+
+In this exercise the private variable laser_scan_ must use std::shared_ptr<sensor_msgs::LaserScan> instead of a raw pointer. In the laserScanCallback function, the laser scan data is stored using std::make_shared to create a shared pointer from the received message. Also, the printClosestObstacleDistance function must be updated to handle the shared pointer correctly.
+
+  laser_subscriber.cpp
+
+#include <memory>
+#include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
+
+class LaserSubscriberNode {
+public:
+  LaserSubscriberNode() : laser_scan_(nullptr) {
+    // Initialize the ROS node
+    ros::NodeHandle nh;
+
+    // Subscribe to the laser scan topic
+    laser_scan_sub =
+        nh.subscribe("/kobuki/laser/scan", 10,
+                     &LaserSubscriberNode::laserScanCallback, this);
+  }
+
+  void printClosestObstacleDistance() const {
+    float min_range = laser_scan_->ranges[0];
+    int min_index = 0;
+
+    // Find the index of the minimum range in the laser scan data
+    for (int i = 1; i < laser_scan_->ranges.size(); i++) {
+      if (laser_scan_->ranges[i] < min_range) {
+        min_range = laser_scan_->ranges[i];
+        min_index = i;
+      }
+    }
+
+    // Calculate the angle at which the closest obstacle is found
+    float angle =
+        laser_scan_->angle_min + min_index * laser_scan_->angle_increment;
+
+    // Print the distance to the closest obstacle and the corresponding angle in
+    // radian
+    std::cout << "Closest obstacle distance: " << min_range
+              << ", Angle (rad): " << angle << std::endl;
+  }
+
+private:
+  // Laser scan callback function
+  void laserScanCallback(const sensor_msgs::LaserScanConstPtr &msg) {
+    // Store the laser scan data using a shared pointer
+    laser_scan_ = std::make_shared<sensor_msgs::LaserScan>(*msg);
+
+    if (laser_scan_ != nullptr && !laser_scan_->ranges.empty()) {
+      // Call the function to print the distance to the closest obstacle
+      printClosestObstacleDistance();
+    }
+  }
+
+  std::shared_ptr<sensor_msgs::LaserScan> laser_scan_;
+  ros::Subscriber laser_scan_sub;
+};
+
+int main(int argc, char **argv) {
+  // Initialize the ROS node
+  ros::init(argc, argv, "laser_subscriber_node");
+
+  // Create an instance of the LaserSubscriberNode class
+  LaserSubscriberNode node;
+
+  // Spin the node
+  ros::spin();
+
+  return 0;
+}
+
+- End of Solution for Exercise 5.14.1 -
+5.15   Conclusions about smart pointers
+
+    Always use smart pointers instead of raw pointers
+    Pass by value and return by value
+    Do not pass smart pointers by reference
+
+
