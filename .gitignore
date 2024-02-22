@@ -1,9 +1,8 @@
 /.DS_Store
 /jovyan/.cache/
 /jovyan/.checkpoint/
+/jovyan/.ipynb_checkpoints/
 /jovyan/.ipython/
 /jovyan/.jupyter/
 /jovyan/.local/
 /jovyan/.npm
-
-
