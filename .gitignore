@@ -1,6 +1,9 @@
 /.DS_Store
-joyvan/.cache/
-joyvan/.checkpoint/
-jovyan/.ipython/
-jovyan/.jupyter/
-joyvan/.local/
+/jovyan/.cache/
+/jovyan/.checkpoint/
+/jovyan/.ipython/
+/jovyan/.jupyter/
+/jovyan/.local/
+/jovyan/.npm
+
+
