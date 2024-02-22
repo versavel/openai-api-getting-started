@@ -1,11 +1,6 @@
 /.DS_Store
-joyvan/.local/*
-joyvan/.ipython/*
-joyvan/.cache/*
-*checkpoint*
-history.sqlite
-joyvan/.jupyter/*
-jovyan/.cache/pip/http-v2/e/b/9/7/6/eb97658ffb63e3939cb3dc97efc785dbe1e790b6a3500bac0ec647fe
-jovyan/.ipython/profile_default/history.sqlite
-jovyan/.jupyter/lab/workspaces/default-37a8.jupyterlab-workspace
-jovyan/.local/share/jupyter/nbsignatures.db
+joyvan/.cache/
+joyvan/.checkpoint/
+jovyan/.ipython/
+jovyan/.jupyter/
+joyvan/.local/
