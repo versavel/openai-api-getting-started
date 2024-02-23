@@ -1,6 +1,6 @@
 # OpenAI API Notebook
 
-Here are instructions to start a conversation with ChatGPT in a Jupyter notebook using the OpenAI API.
+Here are instructions to start a conversation with GPT in a Jupyter notebook using the OpenAI API. It's only the bare basic of what the OpenAI platform API has to offer. There are links to more information about the OpenAI platform at the bottom of this document.
 
 ### Install Docker 
 [on MacOS](install_docker_macos.md)  
@@ -11,6 +11,12 @@ From a new terminal
 ```
 git clone git@github.com:versavel/openai-api-notebook.git
 ```
+### Enter your API key
+Go the the directory where you installed the repo, for example
+```
+cd openai-api-notebook
+```
+And enter your API key in the "key" file
 
 ### Launch a Jupyter notebook server
 Go the the directory where you installed the repo, for example
@@ -58,3 +64,12 @@ print(response)
 ### Multiple conversations
 To start a second conversation, start a new notebook file as explained above. You can have multiple conversations at a time. Each notebook is a separate cocnversation.
 
+
+
+## More information on OpenAI API platform
+
+[Platform Overview](https://openai.com/product)  
+[Documentation for Developers](https://platform.openai.com/overview)  
+[API FAQ](https://help.openai.com/en/collections/3675931-api)  
+
+[ChatGPT (v3.5 is free)](https://chat.openai.com/)
