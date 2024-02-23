@@ -16,7 +16,7 @@ Go the the directory where you installed the repo, for example
 ```
 cd openai-api-notebook
 ```
-And enter your API key in the "key" file
+Create a file called "key" and enter your API key in the file
 
 ### Launch a Jupyter notebook server
 Go the the directory where you installed the repo, for example
