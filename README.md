@@ -25,7 +25,7 @@ And then enter the /jovyan directory
 ```
 cd jovyan
 ```
-Create a file called "key" and enter your API key in the file
+Create a file called "key" and enter your API key in the file. Make sure the file contains only the key symbols and no extra lines or spaces.
 
 ### Launch a Jupyter notebook server
 Go back to the directory where you installed the repo, for example
