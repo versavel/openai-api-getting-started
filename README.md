@@ -51,7 +51,7 @@ or
 ```
 model="gpt-4"
 ```
-More model version information is available at https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbops://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo.  
+More model version information is available [here](https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbops://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo).  
 
 
 ### To Continue the conversation
