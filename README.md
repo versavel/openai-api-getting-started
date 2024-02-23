@@ -1,21 +1,25 @@
 # OpenAI platform API
 
 ## Getting started with the OpenAI platform API
-Here are instructions to start a conversation with GPT in a Jupyter notebook using the OpenAI API. It's only the bare basic of what the OpenAI platform API has to offer. There are links to more information about the OpenAI platform at the bottom of this document.
+
+Use the following instructions to start a conversation with GPT in a Jupyter notebook. The notebook interacts with the OpenAI platform using their API. It's basic example of what the OpenAI platform API has to offer. There are links to more information about the OpenAI platform at the bottom of this document.
+
+### Get API key
+Using the OpenAI platform requires an account and subscription to use the API. After signing up [here](https://platform.openai.com/signup), download an API key [here](https://platform.openai.com/api-keys).
 
 ### Install Docker 
 [on MacOS](install_docker_macos.md)  
 [on Ubuntu 22.04](install_docker_ubuntu.md)
 
 ### Download this repo
-From a new terminal
+Clone the repository in a new terminal window as follows
 ```
-git clone git@github.com:versavel/openai-api-notebook.git
+git clone git@github.com:versavel/openai-api-getting-started.git
 ```
 ### Enter your API key
 Go the the directory where you installed the repo, for example
 ```
-cd openai-api-notebook
+cd openai-api-getting-started
 ```
 And then enter the /jovyan directory
 ```
@@ -26,7 +30,7 @@ Create a file called "key" and enter your API key in the file
 ### Launch a Jupyter notebook server
 Go the the directory where you installed the repo, for example
 ```
-cd openai-api-notebook
+cd openai-api-getting-started
 ```
 Open a new terminal window and run the following command:
 ```
@@ -72,7 +76,7 @@ To start a second conversation, start a new notebook file as explained above. Yo
 ## Next steps
 
 ### Learn to write better prompts
-There is a useful and free course [ChatGPT Prompt Engineering for Developers](https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/) which teaches how to write better prompts to interact with GPT or other LLMs.
+There is a free useful course [ChatGPT Prompt Engineering for Developers](https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/) which teaches how to write better prompts to interact with GPT or other LLMs.
 
 ### More information about the OpenAI API platform
 
