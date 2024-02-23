@@ -16,6 +16,10 @@ Go the the directory where you installed the repo, for example
 ```
 cd openai-api-notebook
 ```
+And then enter the /jovyan directory
+```
+cd jovyan
+```
 Create a file called "key" and enter your API key in the file
 
 ### Launch a Jupyter notebook server
